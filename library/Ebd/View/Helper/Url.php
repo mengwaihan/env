@@ -149,8 +149,7 @@ class Url implements ServiceLocatorAwareInterface, InitializerInterface
         foreach ($params as $key => $value) {
             if (
                 isset($this->params[$key])
-                && is_array($this->params[$key])
-                || is_array($value)
+                && (is_array($this->params[$key]) || is_array($value))
             ) {
                 $this->params[$key] = array_unique(array_merge((array) $this->params[$key], (array) $value));
             } else {
