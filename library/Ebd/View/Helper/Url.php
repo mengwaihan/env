@@ -331,7 +331,7 @@ class Url implements ServiceLocatorAwareInterface, InitializerInterface
         $element = array_pop($args);
 
         $params = &$this->params;
-        while (null !== ($arg = array_shift($args))) {
+        foreach ($args as $arg) {
             if (!isset($params[$arg])) {
                 return false;
             }
@@ -365,7 +365,7 @@ class Url implements ServiceLocatorAwareInterface, InitializerInterface
         $element = array_pop($args);
 
         $params = &$this->params;
-        while (null !== ($arg = array_shift($args))) {
+        foreach ($args as $arg) {
             $params = &$params[$arg];
             $params = (array) $params;
         }
