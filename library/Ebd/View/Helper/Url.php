@@ -137,10 +137,255 @@ class Url implements ServiceLocatorAwareInterface, InitializerInterface
     }
 
     /**
+     * Only keep the necessary keys of parameter
+     *
+     * @param array|string $keys
+     * @return Url
+     * @see Url::unkeep()
+     * @example
+     *  $this->url->keep('page', 'pagesize');
+     *  $this->url->keep(array('page', 'pagesize'));
+     *  $this->url->keep('products', 'filters' => 'status');
+     *  $this->url->keep('products', 'filters' => array('status'));
+     */
+    public function keep($keys)
+    {
+        $this->getParams();
+
+        if (!is_array($keys)) {
+            $keys = func_get_args();
+        }
+
+        $this->params = $this->_keep($this->params, $keys);
+        return $this;
+    }
+
+    /**
+     * It is a callback function for <em>Url::keep()</em>
+     *
+     * @param array|string $params
+     * @param array|string $keys
+     * @return array
+     */
+    protected function _keep($params, $keys)
+    {
+        $retval = array();
+        foreach ((array) $keys as $key => $value) {
+            if (is_numeric($key)) {
+                if (isset($params[$value])) {
+                    $retval[$value] = $params[$value];
+                }
+            } else {
+                if (isset($params[$key])) {
+                    $retval[$key] = $this->_keep($params[$key], $value);
+                }
+            }
+        }
+        return $retval;
+    }
+
+    /**
+     * Remove the unnecessary keys of parameter
+     *
+     * @param array|string $keys
+     * @return Url
+     * @see Url::keep()
+     * @example
+     *  $this->url->unkeep('page', 'pagesize')
+     *  $this->url->unkeep(array('page', 'pagesize'))
+     *  $this->url->unkeep('products', 'filters' => 'status');
+     *  $this->url->unkeep('products', 'filters' => array('status'));
+     */
+    public function unkeep($keys)
+    {
+        $this->getParams();
+
+        if (!is_array($keys)) {
+            $keys = func_get_args();
+        }
+
+        $this->_unkeep($this->params, $keys);
+        return $this;
+    }
+
+    /**
+     * It is a callback function for <em>Url::unkeep()</em>
+     *
+     * @param array|string $params
+     * @param array|string $keys
+     */
+    protected function _unkeep(&$params, $keys)
+    {
+        foreach ((array) $keys as $key => $value) {
+            if (is_numeric($key)) {
+                if (isset($params[$value])) {
+                    unset($params[$value]);
+                }
+            } else {
+                if (isset($params[$key])) {
+                    $this->_unkeep($params[$key], $value);
+                }
+            }
+        }
+    }
+
+    /**
+     * Add elements to parameters
+     *
+     * @param array $elements
+     * @return Url
+     * @see Url::remove()
+     * @example
+     *  $this->url->add(array('status' => 9)));
+     *  $this->url->add(array('filters' => array('status' => 3)));
+     *  $this->url->add(array('filters' => array('status' => [3])));
+     */
+    public function add($elements)
+    {
+        $this->getParams();
+        $this->_add($this->params, $elements);
+        return $this;
+    }
+
+    /**
+     * It is a callback function for <em>Url::add()</em>
+     *
+     * @param array $params
+     * @param array|string $elements
+     */
+    protected function _add(&$params, $elements)
+    {
+        foreach ((array) $elements as $key => $element) {
+            if (is_numeric($key)) {
+                if (false === array_search($element, $params)) {
+                    $params[] = $element;
+                }
+            } else {
+                if (isset($params[$key])) {
+                    $params[$key] = (array) $params[$key];
+                    $this->_add($params[$key], $element);
+                } else {
+                    $params[$key] = $element;
+                }
+            }
+        }
+    }
+
+    /**
+     * Remove elements from parameters
+     *
+     * @param array $elements
+     * @return Url
+     * @see Url::add()
+     * @example
+     *  $this->url->remove(array('status' => 9)));
+     *  $this->url->remove(array('filters' => array('status' => 3)));
+     *  $this->url->remove(array('filters' => array('status' => [3])));
+     */
+    public function remove($elements)
+    {
+        $this->getParams();
+        $this->_remove($this->params, $elements);
+        return $this;
+    }
+
+    /**
+     * It is a callback function for <em>Url::remove()</em>
+     *
+     * @param array $params
+     * @param array|string $elements
+     */
+    protected function _remove(&$params, $elements)
+    {
+        foreach ((array) $elements as $key => $element) {
+            if (is_numeric($key)) {
+                $pos = array_search($element, $params);
+                if (false !== $pos) {
+                    array_splice($params, $pos, 1);
+                }
+            } else {
+                if (isset($params[$key])) {
+                    $params[$key] = (array) $params[$key];
+                    $this->_remove($params[$key], $element);
+                }
+            }
+        }
+    }
+
+    /**
+     * Whether or not has the element
+     *
+     * @param string $arg
+     * @param string $element
+     * @return boolean
+     * @see Url::toggle()
+     * @example
+     *  $this->url->has('name', 'bruce');
+     *  $this->url->has('filter', 'status', 'status', 4);
+     */
+    public function has($arg, $element)
+    {
+        $this->getParams();
+
+        $args = func_get_args();
+        $element = array_pop($args);
+
+        $params = &$this->params;
+        while (null !== ($arg = array_shift($args))) {
+            if (!isset($params[$arg])) {
+                return false;
+            }
+
+            $params = &$params[$arg];
+            $params = (array) $params;
+        }
+
+        if (false === array_search($element, $params)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Toggle an element
+     *
+     * @param string $arg
+     * @param string $element
+     * @return Url
+     * @see Url::has()
+     * @example
+     *  $this->url->toggle('name', 'bruce');
+     *  $this->url->toggle('filter', 'status', 'status', 4);
+     */
+    public function toggle($arg, $element)
+    {
+        $this->getParams();
+
+        $args = func_get_args();
+        $element = array_pop($args);
+
+        $params = &$this->params;
+        while (null !== ($arg = array_shift($args))) {
+            $params = &$params[$arg];
+            $params = (array) $params;
+        }
+
+        $pos = array_search($element, $params);
+        if (false === $pos) {
+            $params[] = $element;
+        } else {
+            array_splice($params, $pos, 1);
+        }
+
+        return $this;
+    }
+
+    /**
      * Add parameters (only merge to the origin parameters)
      *
      * @param array $params
      * @return Url
+     * @deprecated
      */
     public function addParams(array $params)
     {
@@ -166,6 +411,7 @@ class Url implements ServiceLocatorAwareInterface, InitializerInterface
      * @param string $arrKey
      * @param string $value
      * @return Url
+     * @deprecated
      */
     public function toggleParam($arrKey, $value)
     {
@@ -182,6 +428,7 @@ class Url implements ServiceLocatorAwareInterface, InitializerInterface
      *
      * @param array|string $array
      * @return Url
+     * @deprecated
      */
     public function removeParams($array)
     {
@@ -204,6 +451,7 @@ class Url implements ServiceLocatorAwareInterface, InitializerInterface
      *
      * @param array|string $array
      * @return Url
+     * @deprecated
      */
     public function keepParams($array)
     {
