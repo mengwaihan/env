@@ -1,0 +1,6 @@
+Thumbs.db
+*.private.php
+*~
+/nbproject
+Test*
+test
