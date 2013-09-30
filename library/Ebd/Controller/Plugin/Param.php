@@ -60,6 +60,28 @@ class Param implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Deeply get a value by keys
+     *
+     * @param string|int $args
+     * @return mixed It will return null if noset
+     * @example
+     *  $this->param->get('name')
+     *  $this->param->get('filter', 'order', 'status', 0)
+     */
+    public function get($args)
+    {
+        $params = $this->locator->get('Params');
+        $args = func_get_args();
+        foreach ($args as $arg) {
+            if (!isset($params[$arg])) {
+                return null;
+            }
+            $params = $params[$arg];
+        }
+        return $params;
+    }
+
+    /**
      * Set service locator
      *
      * @param ServiceLocator $serviceLocator
