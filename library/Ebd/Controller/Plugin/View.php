@@ -8,8 +8,16 @@
 
 namespace Ebd\Controller\Plugin;
 
-class View extends AbstractPlugin
+use Ebd\ServiceLocator\ServiceLocatorAwareInterface;
+use Ebd\ServiceLocator\ServiceLocator;
+
+class View extends AbstractPlugin implements ServiceLocatorAwareInterface
 {
+    /**
+     * @var ServiceLocator
+     */
+    protected $locator = null;
+
     /**
      * Get View Object
      *
@@ -32,5 +40,27 @@ class View extends AbstractPlugin
 
         // return
         return $view;
+    }
+
+    /**
+     * Set service locator
+     *
+     * @param ServiceLocator $serviceLocator
+     * @return Controller
+     */
+    public function setServiceLocator(ServiceLocator $serviceLocator)
+    {
+        $this->locator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get service locator
+     *
+     * @return ServiceLocator
+     */
+    public function getServiceLocator()
+    {
+        return $this->locator;
     }
 }
