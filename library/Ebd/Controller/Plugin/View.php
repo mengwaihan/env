@@ -10,8 +10,9 @@ namespace Ebd\Controller\Plugin;
 
 use Ebd\ServiceLocator\ServiceLocatorAwareInterface;
 use Ebd\ServiceLocator\ServiceLocator;
+use Ebd\ServiceLocator\PluginManager\FactoryInterface;
 
-class View extends AbstractPlugin implements ServiceLocatorAwareInterface
+class View extends AbstractPlugin implements ServiceLocatorAwareInterface, FactoryInterface
 {
     /**
      * @var ServiceLocator
@@ -24,7 +25,7 @@ class View extends AbstractPlugin implements ServiceLocatorAwareInterface
      * @return \Ebd\View\View
      * @todo remove TPL_DIR constant
      */
-    public function __invoke()
+    public function factory()
     {
         /* @var $resolver \Ebd\View\Resolver\Resolver */
         $resolver = $this->locator->get('Ebd\View\Resolver\Resolver');
