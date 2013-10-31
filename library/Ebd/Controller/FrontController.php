@@ -12,7 +12,6 @@ use Ebd\Event\AbstractEventDispatcher;
 use Ebd\Utils\WordConvertor;
 use Ebd\Controller\AbstractActionController;
 use Ebd\View\View;
-use Ebd\View\Resolver\Resolver as ViewResolver;
 use Ebd\View\Model\ModelInterface;
 use Ebd\View\Model\ViewModel;
 use Ebd\View\Model\JsonModel;
@@ -198,19 +197,8 @@ class FrontController extends AbstractEventDispatcher
         /* @var $layout ModelInterface */
         $layout = $this->controller->getLayout();
 
+        /* @var $view View */
         $view = $this->controller->view();
-
-        /* @var $resolver ViewResolver */
-//        $resolver = new ViewResolver();
-//        $resolver->addPath(TPL_DIR);
-//
-//        /* @var $renderer PhpRenderer */
-//        $renderer = $this->locator->get('Ebd\View\Renderer\PhpRenderer');
-//        $renderer->setResolver($resolver);
-//
-//        /* @var $view View */
-//        $this->view = $view = new View;
-//        $view->setRender($renderer);
 
         // use layout
         if ($layout) {

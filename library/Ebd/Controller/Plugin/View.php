@@ -8,74 +8,29 @@
 
 namespace Ebd\Controller\Plugin;
 
-use Ebd\View\Model\ModelInterface;
-use Ebd\View\Model\ViewModel;
-use Ebd\Loader\Autoloader;
-use Ebd\ServiceLocator\ServiceLocatorAwareInterface;
-use Ebd\ServiceLocator\ServiceLocator;
-
-/**
- * Get the view model from other method of controller
- */
-class View extends AbstractPlugin implements ServiceLocatorAwareInterface
+class View extends AbstractPlugin
 {
     /**
-     * @var ServiceLocator
-     */
-    protected $locator = null;
-
-    /**
-     * Saved models
+     * Get View Object
      *
-     * @var array
-     */
-    protected $models = array();
-
-    /**
-     * Get a model from the method of controller
-     * It also can pass some parameters.
-     *
-     * @param string|array $method
-     * @param mixed $more_parameters
-     * @return ModelInterface
+     * @return \Ebd\View\View
+     * @todo remove TPL_DIR constant
      */
     public function __invoke()
     {
-        /* @var $resolver ViewResolver */
+        /* @var $resolver \Ebd\View\Resolver\Resolver */
         $resolver = $this->locator->get('Ebd\View\Resolver\Resolver');
         $resolver->addPath(TPL_DIR);
 
-        /* @var $renderer PhpRenderer */
+        /* @var $renderer \Ebd\View\Renderer\PhpRenderer */
         $renderer = $this->locator->get('Ebd\View\Renderer\PhpRenderer');
         $renderer->setResolver($resolver);
 
-        /* @var $view View */
+        /* @var $view \Ebd\View\View */
         $view = $this->locator->get('Ebd\View\View');
         $view->setRender($renderer);
-        
+
         // return
         return $view;
-    }
-
-    /**
-     * Set service locator
-     *
-     * @param ServiceLocator $serviceLocator
-     * @return Controller
-     */
-    public function setServiceLocator(ServiceLocator $serviceLocator)
-    {
-        $this->locator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get service locator
-     *
-     * @return ServiceLocator
-     */
-    public function getServiceLocator()
-    {
-        return $this->locator;
     }
 }
