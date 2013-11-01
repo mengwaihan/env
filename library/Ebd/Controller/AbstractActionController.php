@@ -18,10 +18,12 @@ use Ebd\View\Model\ModelInterface;
  *
  * @property \Ebd\Controller\Plugin\Layout $layout
  * @property \Ebd\Controller\Plugin\Model $model
+ * @property \Ebd\View\View $view
  *
  * @method \Ebd\Controller\Plugin\Layout layout($model) The layout plugin
  * @method \Ebd\Controller\Plugin\Model model($method) Get the view model from other method of controller
  * @method \Ebd\Controller\Plugin\Param param(string $name, $default) Get the parameter value
+ * @method \Ebd\View\View view()
  */
 abstract class AbstractActionController extends AbstractEventDispatcher
 {
