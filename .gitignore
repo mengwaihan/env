@@ -1,2 +1,4 @@
 /tmp/
 personal
+*.pid
+*.log
