@@ -2,14 +2,12 @@
 /**
  * Standard Library
  *
- * @package Ebd_Utils
- * @see Ebd\Cache\Apc
- * @see Ebd\Cache\Redis
+ * @package Ebd_Cache
  */
 
-namespace Ebd\Utils;
+namespace Ebd\Cache;
 
-class Cache
+class Apc
 {
     /**
      * Cache and get stored value (APC cache)
