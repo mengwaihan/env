@@ -18,16 +18,16 @@ class Redis implements ServiceLocatorAwareInterface
     protected $locator = null;
 
     /**
-     * Cache and get stored value (APC cache)
+     * Cache and get stored value (Redis cache)
      *
      * @param string $key
      * @param callable $generator
      * @param int $ttl
      * @return mixed
      */
-    public static function get($key, $generator, $ttl = 0)
+    public function get($key, $generator, $ttl = 0)
     {
-        if ($this->locator->get('Redis')) {
+        if ($this->locator->has('Redis')) {
             $redis = $this->locator->get('Redis');
             if ($redis->exists($key)) {
                 return $redis->get($key);
