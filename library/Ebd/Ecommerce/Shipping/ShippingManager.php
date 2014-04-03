@@ -36,6 +36,13 @@ class ShippingManager extends AbstractPluginManager
     protected $stateCode = null;
 
     /**
+     * Usually, we don't need it.
+     *
+     * @var string
+     */
+    protected $postcode = null;
+
+    /**
      * Usually, it should be the quantity of shopping cart
      *
      * @var int
@@ -110,6 +117,18 @@ class ShippingManager extends AbstractPluginManager
     }
 
     /**
+     * Set postcode
+     *
+     * @param string $postcode
+     * @return ShippingManager
+     */
+    public function setPostcode($postcode)
+    {
+        $this->postcode = preg_replace('/[\-\s]/', '', $postcode);
+        return $this;
+    }
+
+    /**
      * Set quantity
      *
      * @param int $quantity
@@ -141,6 +160,7 @@ class ShippingManager extends AbstractPluginManager
     {
         $shipping = parent::get($name);
         $shipping->setState($this->countryCode, $this->stateCode);
+        $shipping->setPostcode($this->postcode);
         $shipping->setQuantity($this->quantity);
         $shipping->setAmount($this->amount);
         return $shipping;

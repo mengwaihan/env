@@ -18,7 +18,7 @@ abstract class AbstractShipping
     /**
      * @var string
      */
-    const ERROR_CANNOT_LOCATE_STATE = 'No shipping available to the selected state.';
+    const ERROR_CANNOT_LOCATE_STATE = 'No shipping available to the selected state or postcode.';
 
     /**
      * Subclass should override it.
@@ -34,6 +34,11 @@ abstract class AbstractShipping
      *          array(
      *              '!FM,PW,VI',
      *              '1:5.95,2:5.95,3:9.9,4:9.9,5:14.8,6:14.8,7:19.8,8:19.8',
+     *          ),
+     *          array(
+     *              '!1100,1200-1300',
+     *              '1:5.95,2:5.95,3:9.9,4:9.9,5:14.8,6:14.8,7:19.8,8:19.8',
+     *              'postcode' => true,
      *          ),
      *      ),
      *      '!JP,KR' => array(
@@ -91,6 +96,13 @@ abstract class AbstractShipping
     protected $stateCode = null;
 
     /**
+     * Usually, we don't need it.
+     *
+     * @var string
+     */
+    protected $postcode = null;
+
+    /**
      * Usually, it should be the quantity of shopping cart
      *
      * @var int
@@ -122,6 +134,18 @@ abstract class AbstractShipping
     {
         $this->countryCode = $countryCode;
         $this->stateCode = $stateCode;
+        return $this;
+    }
+
+    /**
+     * Set postcode
+     *
+     * @param string $postcode
+     * @return AbstractShipping
+     */
+    public function setPostcode($postcode)
+    {
+        $this->postcode = $postcode;
         return $this;
     }
 
@@ -269,7 +293,7 @@ abstract class AbstractShipping
             $rates = array($rates);
         }
 
-        // locate state
+        // locate state or postcode
         $rate = false;
         foreach ($rates as $details) {
 
@@ -283,24 +307,77 @@ abstract class AbstractShipping
 
             // exclude
             elseif ('!' === $state{0}) {
-                $states = explode(',', substr($state, 1));
-                if (!in_array($this->stateCode, $states)) {
-                    $rate = $details;
-                    break;
+
+                // locate from state table
+                if (empty($details['postcode'])) {
+                    $states = explode(',', substr($state, 1));
+                    if (!in_array($this->stateCode, $states)) {
+                        $rate = $details;
+                        break;
+                    }
+                }
+
+                // locate from postcode table
+                else {
+                    $postcodes = explode(',', substr($state, 1));
+                    if (!in_array($this->postcode, $postcodes)) {
+                        $break = false;
+                        foreach ($postcodes as $range) {
+                            if (strpos($range, '-')) {
+                                $arr = explode('-', $range);
+                                $min = $arr[0];
+                                $max = $arr[1];
+                                if ($this->postcode >= $min && $this->postcode <= $max) {
+                                    $break = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!$break) {
+                            $rate = $details;
+                            break;
+                        }
+                    }
                 }
             }
 
             // normal
             else {
-                $states = explode(',', $state);
-                if (in_array($this->stateCode, $states)) {
-                    $rate = $details;
-                    break;
+
+                // locate from state table
+                if (empty($details['postcode'])) {
+                    $states = explode(',', $state);
+                    if (in_array($this->stateCode, $states)) {
+                        $rate = $details;
+                        break;
+                    }
+                }
+
+                // locate from postcode table
+                else {
+                    $postcodes = explode(',', $state);
+                    if (in_array($this->postcode, $postcodes)) {
+                        $rate = $details;
+                        break;
+                    }
+
+                    // check range
+                    foreach ($postcodes as $range) {
+                        if (strpos($range, '-')) {
+                            $arr = explode('-', $range);
+                            $min = $arr[0];
+                            $max = $arr[1];
+                            if ($this->postcode >= $min && $this->postcode <= $max) {
+                                $rate = $details;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        // Can't locate state
+        // Can't locate state or postcode
         if (false === $rate) {
             $this->error = self::ERROR_CANNOT_LOCATE_STATE;
             return false;
