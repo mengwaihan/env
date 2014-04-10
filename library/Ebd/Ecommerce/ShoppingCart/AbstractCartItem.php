@@ -275,7 +275,6 @@ abstract class AbstractCartItem implements CartItemInterface
      */
     protected function reset()
     {
-        $this->identifier = null;
         $this->product = null;
         $this->fullOptions = null;
         $this->productPrice = null;
