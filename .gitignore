@@ -4,3 +4,9 @@ Thumbs.db
 /nbproject
 Test*
 test
+=======
+/tmp/
+personal
+temp
+*.pid
+*.log
