@@ -1,3 +1,10 @@
+Thumbs.db
+*.private.php
+*~
+/nbproject
+Test*
+test
+=======
 /tmp/
 personal
 temp
