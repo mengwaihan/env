@@ -1,0 +1,15 @@
+server {
+    listen 80 default;
+    server_name _;
+    root html;
+
+    location / {
+        index index.html index.php;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass backend;
+        fastcgi_index index.php;
+        include fastcgi.conf;
+    }
+}
