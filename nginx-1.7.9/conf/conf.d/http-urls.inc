@@ -90,15 +90,13 @@ if ($server_port = 80) {
     #rewrite ^(.*)$ http://$host$1 permanent;
 }
 
-if ($server_port = 443) {
-    rewrite ^/passport\.php$ /passport permanent;
-    rewrite ^/logoff\.php$ /logout permanent;
-    rewrite ^/invoice\.php$ /invoice permanent;
-    rewrite ^/contact_us\.php$ /contact permanent;
-    rewrite ^/account\.php$ /account permanent;
-    rewrite ^/password_forgotten\.php$ /reset-password permanent;
-    rewrite ^/register\.html$ /register permanent;
-    rewrite ^/cart\.html$ /cart permanent;
-    rewrite ^/checkout\.php$ /checkout permanent;
-    rewrite ^/checkout_success\.php$ /thankyou permanent;
-}
+rewrite ^/passport\.php$ /passport permanent;
+rewrite ^/logoff\.php$ /logout permanent;
+rewrite ^/invoice\.php$ /invoice permanent;
+rewrite ^/contact_us\.php$ /contact permanent;
+rewrite ^/account\.php$ /account permanent;
+rewrite ^/password_forgotten\.php$ /reset-password permanent;
+rewrite ^/register\.html$ /register permanent;
+rewrite ^/cart\.html$ /cart permanent;
+rewrite ^/checkout\.php$ /checkout permanent;
+rewrite ^/checkout_success\.php$ /thankyou permanent;
