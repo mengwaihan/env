@@ -17,4 +17,9 @@ echo Starting Nginx ...
 cd ../nginx-1.7.9
 ..\RunHiddenConsole nginx.exe
 
-cd ..
+cd \sites\www.eyebuydirect.com\static
+
+
+
+
+
